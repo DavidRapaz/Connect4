@@ -1,7 +1,7 @@
 #include "Button.h"
 
 // Initialize the button
-Button::Button(
+void Button::Init(
 	float width, 
 	float height,
 	float xPos,
@@ -32,6 +32,38 @@ Button::Button(
 	m_Description.setFillColor(textColor);
 	m_Description.setCharacterSize(textSize);
 	m_Description.setOrigin(textXPos, textYPos);
+
+	m_WasInit = true;
+}
+
+// Check if the button was already init
+bool Button::CheckWasInit()
+{
+	return m_WasInit;
+}
+
+// Get the height of the button
+float Button::GetHeight()
+{
+	return m_Height;
+}
+
+// Get the with of the button
+float Button::GetWidth()
+{
+	return m_Width;
+}
+
+// Get the top left position of the button in the x axis
+float Button::GetTopLeftXPos()
+{
+	return m_XPos;
+}
+
+// Get the top left position of the button in the Y axis
+float Button::GetTopLeftYPos()
+{
+	return m_YPos;
 }
 
 // Return the shape type
