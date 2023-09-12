@@ -1,9 +1,9 @@
 #pragma once
+#include "Shape.h";
 #include <SFML/Graphics/RectangleShape.hpp>
-#include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Text.hpp>
 
-class Button
+class Button : public Shape
 {
 	public:
 		void Init(
@@ -21,17 +21,13 @@ class Button
 		);
 
 		bool CheckWasInit();
-
-		float GetHeight();
-		float GetWidth();
-		float GetTopLeftXPos();
-		float GetTopLeftYPos();
+		bool InRange(int x, int y) override;
 		
 		sf::RectangleShape GetShape();
 		sf::Text GetText();
 
 	private:
-		float m_Width, m_Height, m_XPos, m_YPos;
+		float m_Width, m_Height;
 		
 		bool m_WasInit = false;
 

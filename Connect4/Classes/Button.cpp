@@ -16,10 +16,12 @@ void Button::Init(
 )
 {
 	// Set float properties for with, height, x position and y position
-	m_Width  = width;
-	m_Height = height;
-	m_XPos   = xPos;
-	m_YPos   = yPos;
+	m_Width      = width;
+	m_Height     = height;
+	m_LeftXPos   = xPos;
+	m_RightXPos  = -xPos + width;
+	m_TopYPos    = yPos;
+	m_BottomYPos = -yPos + height;
 
 	// Set button size and background
 	m_Shape.setSize(sf::Vector2f(width, height));
@@ -42,28 +44,10 @@ bool Button::CheckWasInit()
 	return m_WasInit;
 }
 
-// Get the height of the button
-float Button::GetHeight()
+// Check if the coords and inside the buttons range
+bool Button::InRange(int x, int y)
 {
-	return m_Height;
-}
-
-// Get the with of the button
-float Button::GetWidth()
-{
-	return m_Width;
-}
-
-// Get the top left position of the button in the x axis
-float Button::GetTopLeftXPos()
-{
-	return m_XPos;
-}
-
-// Get the top left position of the button in the Y axis
-float Button::GetTopLeftYPos()
-{
-	return m_YPos;
+	return (x >= (-m_LeftXPos) && x <= m_RightXPos) && (y >= (-m_TopYPos) && y <= m_BottomYPos);
 }
 
 // Return the shape type
