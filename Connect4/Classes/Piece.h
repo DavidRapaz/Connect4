@@ -9,14 +9,17 @@ public:
 	void UpdateColor(sf::Color newColor);
 
 	bool InRange(int x, int y) override;
+	bool InColumn(int x);
+	bool IsFilled();
 
 	sf::CircleShape GetShape();
-	// ~Piece();
+
+	sf::Color GetFillColor();
 
 private:
 	float m_Radius, m_XPos, m_YPos;
 
 	sf::CircleShape m_Shape;
 
-	sf::Color m_Color = sf::Color::Green;
+	sf::Color m_IsFreeColor = sf::Color::Green;
 };

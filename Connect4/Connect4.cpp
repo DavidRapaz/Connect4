@@ -1,26 +1,37 @@
 #include <SFML/Graphics.hpp>
+#include "Classes/Player.h"
 #include "Classes/Button.h"
 #include "Classes/Piece.h"
 
-enum class State
+enum class State : char
 {
     InMenu, InGame, InHighScores, Quit
+};
+
+enum class Turn : char
+{
+    PlayerOne = 1, PlayerTwo
 };
 
 //--- Global Variables ---//
 
 State state  = State::InMenu, // Set the initial state value to In Menu
-    previous = State::InMenu;
+    previous = State::InMenu; 
+
+Turn playerTurn = Turn::PlayerOne;
 
 Button play, highScores, quit;
 
-constexpr int SCREEN_WIDHT  = 1080;
-constexpr int SCREEN_HEIGHT = 600;
+constexpr int WINDOW_WIDTH  = 1080; // Width of the window in pixels
+constexpr int WINDOW_HEIGHT = 600;  // Height of the window in pixels
 
-constexpr short BOARD_HEIGHT = 6; // Total of rows
-constexpr short BOARD_WIDTH  = 7; // Total of columns
+constexpr int BOARD_WIDTH  = 700; // Height of the board in pixels
+constexpr int BOARD_HEIGHT = 600; // Width of the board in pixels
 
-float pressedX, pressedY;
+constexpr short BOARD_ROWS    = 6; // Total of rows
+constexpr short BOARD_COLUMNS = 7; // Total of columns
+
+float pressedX, pressedY; // store X and Y coordenates when the users presses the mouse button on the window
 
 //--- Menu Functions ---//
 
@@ -47,29 +58,44 @@ void initGameState(Piece* board, bool redraw = false)
 
     previous = State::InGame;
 
-    for (int row = 0; row < BOARD_HEIGHT; row++)
-    {
-        int offset = row * BOARD_WIDTH;
+    float marginLeft = (WINDOW_WIDTH - BOARD_WIDTH) / 2;
 
-        for (int column = 0; column < BOARD_WIDTH; column++)
+    for (int row = 0; row < BOARD_ROWS; row++)
+    {
+        int offset = row * BOARD_COLUMNS;
+
+        for (int column = 0; column < BOARD_COLUMNS; column++)
         {
             // TODO
             // Create a solution to change the radius and the position of the pieces
             // considering the height and width of the screen
-            board[offset + column].Init(-154.29 * column, -100.f * row, 50.f);
+            board[offset + column].Init(-marginLeft - (column * 100.f), -100.f * row, 50.f);
         }
     }
 }
 
 void drawGame(sf::RenderWindow& window, Piece* board)
 {
-    for (int row = 0; row < BOARD_HEIGHT; row++)
+    for (int row = 0; row < BOARD_ROWS; row++)
     {
-        int offset = row * BOARD_WIDTH;
+        int offset = row * BOARD_COLUMNS;
 
-        for (int column = 0; column < BOARD_WIDTH; column++)
+        for (int column = 0; column < BOARD_COLUMNS; column++)
         {
             window.draw(board[offset + column].GetShape());
+        }
+    }
+}
+
+bool IsWinner(Player* player, Piece* board)
+{
+    for (int row = 0; row < BOARD_ROWS; row++)
+    {
+        int offset = row * BOARD_COLUMNS;
+
+        for (int column = 0; column < BOARD_COLUMNS; column++)
+        {
+
         }
     }
 }
@@ -83,7 +109,7 @@ void drawHighScores(sf::RenderWindow& window)
 
 //--- Global Functions ---//
 
-void handleButtonPressed(Piece* board = NULL)
+void handleButtonPressed(Piece* board = nullptr, Player* player = nullptr, Turn newTurn = Turn::PlayerOne)
 {
     switch (state)
     {
@@ -94,17 +120,41 @@ void handleButtonPressed(Piece* board = NULL)
 
         break;
     case State::InGame:
-        for (int row = 0; row < BOARD_HEIGHT; row++)
-        {
-            int offset = row * BOARD_WIDTH;
+    {
+        short targetCol = -1;
 
-            for (int column = 0; column < BOARD_WIDTH; column++)
+        // Get the target column
+        for (short column = 0; column < BOARD_COLUMNS; column++)
+        {
+            if (board[column].InColumn(pressedX))
+                targetCol = column;
+        }
+
+        // If the target column is null then avoid doing the rest of the operation
+        if (targetCol == NULL) return;
+
+        // Store the index of the array to update the piece
+        short indexToUpdate = -1;
+
+        // Go through each row
+        for (short row = 0; row < BOARD_ROWS; row++)
+        {
+            bool currentIsFilled = board[row * BOARD_COLUMNS + targetCol].IsFilled();
+
+            // Give the current index if it's not filled
+            if (!currentIsFilled)
             {
-                if(board[offset + column].InRange(pressedX, pressedY))
-                    board[offset + column].UpdateColor(sf::Color::Blue);
+                indexToUpdate = row * BOARD_COLUMNS + targetCol;
             }
         }
-        break;
+
+        if (indexToUpdate != -1)
+        {
+            board[indexToUpdate].UpdateColor(player->GetPlayerPiece());
+            playerTurn = newTurn;
+        }
+    }
+    break;
     case State::InHighScores:
         break;
     }
@@ -115,13 +165,18 @@ void handleButtonPressed(Piece* board = NULL)
 int main()
 {
     // create the window
-    sf::RenderWindow window(sf::VideoMode(SCREEN_WIDHT, SCREEN_HEIGHT), "Connect4 Menu");
+    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Connect4 Menu");
 
     // Set the predefined font
     sf::Font font;
     font.loadFromFile("Assets/Fonts/Roboto/Roboto-Medium.ttf");
 
-    Piece* board = new Piece[BOARD_HEIGHT * BOARD_WIDTH];
+    // Initialize the board
+    Piece* board = nullptr;
+
+    // Initialize the players
+    Player* playerOne = nullptr;
+    Player* playerTwo = nullptr;
 
     while (state != State::Quit)
     {
@@ -134,7 +189,17 @@ int main()
                 pressedX = event.mouseButton.x;
                 pressedY = event.mouseButton.y;
                     
-                handleButtonPressed(board);
+                handleButtonPressed(
+                    board, 
+                    playerTurn == Turn::PlayerOne ? playerOne : playerTwo, 
+                    playerTurn == Turn::PlayerOne ? Turn::PlayerTwo : Turn::PlayerOne
+                );
+
+                if (IsWinner(playerOne, board)) 
+                    return;
+
+                if (IsWinner(playerTwo, board))
+                    return;
                 break;
             case sf::Event::Closed:
                 state = State::Quit;
@@ -161,6 +226,15 @@ int main()
             drawMenu(window);
             break;
         case State::InGame:
+            if (board == nullptr)
+                board = new Piece[BOARD_ROWS * BOARD_COLUMNS];
+
+            if (playerOne == nullptr)
+                playerOne = new Player("player one", sf::Color::Yellow);
+
+            if (playerTwo == nullptr)
+                playerTwo = new Player("player two", sf::Color::Red);
+
             initGameState(board);
             drawGame(window, board);
             break;
