@@ -5,7 +5,7 @@
 
 enum class State : char
 {
-    InMenu, InGame, InHighScores, Quit
+    InMenu, InGame, EndGame, Quit
 };
 
 enum class Turn : char
@@ -20,7 +20,7 @@ State state  = State::InMenu, // Set the initial state value to In Menu
 
 Turn playerTurn = Turn::PlayerOne;
 
-Button play, highScores, quit;
+Button *play, *quit, *replay, *quitToMenu;
 
 constexpr int WINDOW_WIDTH  = 1080; // Width of the window in pixels
 constexpr int WINDOW_HEIGHT = 600;  // Height of the window in pixels
@@ -31,6 +31,8 @@ constexpr int BOARD_HEIGHT = 600; // Width of the board in pixels
 constexpr short BOARD_ROWS    = 6; // Total of rows
 constexpr short BOARD_COLUMNS = 7; // Total of columns
 
+int totalPiecesPlayed; // Used to keep track how many pieces where played allong the game
+
 float pressedX, pressedY; // store X and Y coordenates when the users presses the mouse button on the window
 
 //--- Menu Functions ---//
@@ -38,25 +40,22 @@ float pressedX, pressedY; // store X and Y coordenates when the users presses th
 void drawMenu(sf::RenderWindow& window)
 {
     // Draw play button
-    window.draw(play.GetShape());
-    window.draw(play.GetText());
-
-    // Draw high scores button
-    window.draw(highScores.GetShape());
-    window.draw(highScores.GetText());
+    window.draw(play->GetShape());
+    window.draw(play->GetText());
 
     // Draw quit button
-    window.draw(quit.GetShape());
-    window.draw(quit.GetText());
+    window.draw(quit->GetShape());
+    window.draw(quit->GetText());
 }
 
 //--- Game Functions ---//
 
 void initGameState(Piece* board, bool redraw = false)
 {
-    if (previous == State::InGame && !redraw) return;
+    if (previous == State::InGame) return;
 
-    previous = State::InGame;
+    previous          = State::InGame;
+    totalPiecesPlayed = 0;
 
     float marginLeft = (WINDOW_WIDTH - BOARD_WIDTH) / 2;
 
@@ -74,6 +73,17 @@ void initGameState(Piece* board, bool redraw = false)
     }
 }
 
+void drawEndGame(sf::RenderWindow& window)
+{
+    // Draw replay button
+    window.draw(replay->GetShape());
+    window.draw(replay->GetText());
+
+    // Draw quit to menu button
+    window.draw(quitToMenu->GetShape());
+    window.draw(quitToMenu->GetText());
+}
+
 void drawGame(sf::RenderWindow& window, Piece* board)
 {
     for (int row = 0; row < BOARD_ROWS; row++)
@@ -87,24 +97,70 @@ void drawGame(sf::RenderWindow& window, Piece* board)
     }
 }
 
-bool IsWinner(Player* player, Piece* board)
+bool isWinner(Player* player, Piece* board)
 {
+    // Check if in the same row
     for (int row = 0; row < BOARD_ROWS; row++)
     {
         int offset = row * BOARD_COLUMNS;
 
         for (int column = 0; column < BOARD_COLUMNS; column++)
         {
+            int columnsRight = BOARD_COLUMNS - column; // Get how many pieces to the right are left
+            int rowsBellow   = BOARD_ROWS - row; // Get how many pieces down are left
+            int index        = offset + column; // Get the start index
 
+            // Check vertically from top to bottom
+            if (rowsBellow >= 4)
+            {
+                if (
+                    board[index].GetFillColor() == player->GetPlayerPiece() &&
+                    board[index + BOARD_COLUMNS].GetFillColor() == player->GetPlayerPiece() &&
+                    board[index + BOARD_COLUMNS * 2].GetFillColor() == player->GetPlayerPiece() &&
+                    board[index + BOARD_COLUMNS * 3].GetFillColor() == player->GetPlayerPiece()
+                )
+                    return true;
+            }
+
+            // Check horizontally from left to right
+            if (columnsRight >= 4)
+            {
+                if (
+                    board[index].GetFillColor() == player->GetPlayerPiece() &&
+                    board[index + 1].GetFillColor() == player->GetPlayerPiece() &&
+                    board[index + 2].GetFillColor() == player->GetPlayerPiece() &&
+                    board[index + 3].GetFillColor() == player->GetPlayerPiece()
+                )
+                    return true;
+            }
+
+            // Check the diagonal from left to right
+            if (rowsBellow >= 4 && columnsRight >= 4)
+            {
+                if (
+                    board[index].GetFillColor() == player->GetPlayerPiece() &&
+                    board[index + (BOARD_COLUMNS * 1 + 1)].GetFillColor() == player->GetPlayerPiece() &&
+                    board[index + (BOARD_COLUMNS * 2 + 2)].GetFillColor() == player->GetPlayerPiece() &&
+                    board[index + (BOARD_COLUMNS * 3 + 3)].GetFillColor() == player->GetPlayerPiece()
+                )
+                    return true;
+            }
+
+            // Check the diagonal from right to left
+            if (rowsBellow >= 4 && columnsRight <= 4)
+            {
+                if (
+                    board[index].GetFillColor() == player->GetPlayerPiece() &&
+                    board[index + (BOARD_COLUMNS * 1 - 1)].GetFillColor() == player->GetPlayerPiece() &&
+                    board[index + (BOARD_COLUMNS * 2 - 2)].GetFillColor() == player->GetPlayerPiece() &&
+                    board[index + (BOARD_COLUMNS * 3 - 3)].GetFillColor() == player->GetPlayerPiece()
+                )
+                    return true;
+            }
         }
     }
-}
 
-//--- High Scores Functions ---//
-
-void drawHighScores(sf::RenderWindow& window)
-{
-    window.draw(quit.GetShape());
+    return false;
 }
 
 //--- Global Functions ---//
@@ -114,9 +170,8 @@ void handleButtonPressed(Piece* board = nullptr, Player* player = nullptr, Turn 
     switch (state)
     {
     case State::InMenu:
-        if (play.InRange(pressedX, pressedY)) state = State::InGame;
-        if (highScores.InRange(pressedX, pressedY)) state = State::InHighScores;
-        if (quit.InRange(pressedX, pressedY)) state = State::Quit;
+        if (play->InRange(pressedX, pressedY)) state = State::InGame;
+        if (quit->InRange(pressedX, pressedY)) state = State::Quit;
 
         break;
     case State::InGame:
@@ -131,7 +186,7 @@ void handleButtonPressed(Piece* board = nullptr, Player* player = nullptr, Turn 
         }
 
         // If the target column is null then avoid doing the rest of the operation
-        if (targetCol == NULL) return;
+        if (targetCol == -1) return;
 
         // Store the index of the array to update the piece
         short indexToUpdate = -1;
@@ -151,11 +206,21 @@ void handleButtonPressed(Piece* board = nullptr, Player* player = nullptr, Turn 
         if (indexToUpdate != -1)
         {
             board[indexToUpdate].UpdateColor(player->GetPlayerPiece());
-            playerTurn = newTurn;
+            
+            if (isWinner(player, board))
+            {
+                state    = State::EndGame;
+                previous = State::EndGame;
+            } else
+            {
+                playerTurn = newTurn;
+            }
         }
     }
     break;
-    case State::InHighScores:
+    case State::EndGame:
+        if (replay->InRange(pressedX, pressedY)) state = State::InGame;
+        if (quitToMenu->InRange(pressedX, pressedY)) state = State::InMenu;
         break;
     }
 }
@@ -194,12 +259,6 @@ int main()
                     playerTurn == Turn::PlayerOne ? playerOne : playerTwo, 
                     playerTurn == Turn::PlayerOne ? Turn::PlayerTwo : Turn::PlayerOne
                 );
-
-                if (IsWinner(playerOne, board)) 
-                    return;
-
-                if (IsWinner(playerTwo, board))
-                    return;
                 break;
             case sf::Event::Closed:
                 state = State::Quit;
@@ -214,14 +273,14 @@ int main()
         switch (state)
         {
         case State::InMenu:
-            if (!play.CheckWasInit()) 
-                play.Init(120.f, 50.f, -480.f, -215.f, sf::Color::Blue, "Play", -525.f, -230.f, font);
+            if (play == nullptr) play = new Button();
+            if (quit == nullptr) quit = new Button();
+
+            if (!play->CheckWasInit()) 
+                play->Init(120.f, 50.f, -480.f, -255.f, sf::Color::Blue, "Play", -525.f, -270.f, font);
                 
-            if (!highScores.CheckWasInit()) 
-                highScores.Init(140.f, 50.f, -470.f, -275.f, sf::Color::Magenta, "High Scores", -493.f, -288.f, font);
-                
-            if (!quit.CheckWasInit()) 
-                quit.Init(120.f, 50.f, -480.f, -335.f, sf::Color::Red, "Quit", -525.f, -348.f, font);
+            if (!quit->CheckWasInit()) 
+                quit->Init(120.f, 50.f, -480.f, -315.f, sf::Color::Red, "Quit", -525.f, -328.f, font);
 
             drawMenu(window);
             break;
@@ -238,8 +297,18 @@ int main()
             initGameState(board);
             drawGame(window, board);
             break;
-        case State::InHighScores:
-            drawHighScores(window);
+        case State::EndGame:
+            if (replay == nullptr) replay = new Button();
+            if (quitToMenu == nullptr) quitToMenu = new Button();
+
+            if (!replay->CheckWasInit())
+                replay->Init(160.f, 50.f, -480.f, -255.f, sf::Color::Black, "Play Again", -525.f, -270.f, font);
+
+            if (!quitToMenu->CheckWasInit())
+                quitToMenu->Init(160.f, 50.f, -480.f, -315.f, sf::Color::Cyan, "Quit To Menu", -505.f, -328.f, font);
+            
+            drawGame(window, board);
+            drawEndGame(window);
             break;
         }
 
