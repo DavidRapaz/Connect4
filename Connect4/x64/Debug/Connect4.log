@@ -1,15 +1,29 @@
-﻿  Connect4.cpp
-F:\_dev\Cpp\Connect4\Connect4\Classes\Player.h(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-F:\_dev\Cpp\Connect4\Connect4\Classes\Button.h(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-F:\_dev\Cpp\Connect4\Connect4\Connect4.cpp(173,37): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-F:\_dev\Cpp\Connect4\Connect4\Connect4.cpp(173,27): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-F:\_dev\Cpp\Connect4\Connect4\Connect4.cpp(174,37): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-F:\_dev\Cpp\Connect4\Connect4\Connect4.cpp(174,27): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-F:\_dev\Cpp\Connect4\Connect4\Connect4.cpp(184,40): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-F:\_dev\Cpp\Connect4\Connect4\Connect4.cpp(222,39): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-F:\_dev\Cpp\Connect4\Connect4\Connect4.cpp(222,29): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-F:\_dev\Cpp\Connect4\Connect4\Connect4.cpp(223,43): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-F:\_dev\Cpp\Connect4\Connect4\Connect4.cpp(223,33): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-F:\_dev\Cpp\Connect4\Connect4\Connect4.cpp(254,45): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-F:\_dev\Cpp\Connect4\Connect4\Connect4.cpp(255,45): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-  Connect4.vcxproj -> F:\_dev\Cpp\Connect4\x64\Debug\Connect4.exe
+﻿  Button.cpp
+D:\_dev\C++\Connect4\Connect4\Classes\Button.h(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  (compiling source file 'Classes/Button.cpp')
+  
+  Piece.cpp
+  Player.cpp
+D:\_dev\C++\Connect4\Connect4\Classes\Player.h(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  (compiling source file 'Classes/Player.cpp')
+  
+  Connect4.cpp
+D:\_dev\C++\Connect4\Connect4\Classes\Player.h(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  (compiling source file 'Connect4.cpp')
+  
+D:\_dev\C++\Connect4\Connect4\Classes\Button.h(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  (compiling source file 'Connect4.cpp')
+  
+D:\_dev\C++\Connect4\Connect4\Connect4.cpp(173,37): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\_dev\C++\Connect4\Connect4\Connect4.cpp(173,27): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\_dev\C++\Connect4\Connect4\Connect4.cpp(174,37): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\_dev\C++\Connect4\Connect4\Connect4.cpp(174,27): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\_dev\C++\Connect4\Connect4\Connect4.cpp(184,40): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\_dev\C++\Connect4\Connect4\Connect4.cpp(222,39): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\_dev\C++\Connect4\Connect4\Connect4.cpp(222,29): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\_dev\C++\Connect4\Connect4\Connect4.cpp(223,43): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\_dev\C++\Connect4\Connect4\Connect4.cpp(223,33): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\_dev\C++\Connect4\Connect4\Connect4.cpp(254,45): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+D:\_dev\C++\Connect4\Connect4\Connect4.cpp(255,45): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+  Generating Code...
+  Connect4.vcxproj -> D:\_dev\C++\Connect4\x64\Debug\Connect4.exe

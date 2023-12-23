@@ -2,7 +2,7 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>F:\_dev\Cpp\Connect4\x64\Debug\Connect4.exe</FullPath>
+      <FullPath>D:\_dev\C++\Connect4\x64\Debug\Connect4.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />
